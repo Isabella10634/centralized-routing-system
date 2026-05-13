@@ -1,0 +1,12 @@
+{
+  "server": {
+    "host": "0.0.0.0",
+    "port": 6000
+  },
+  "database": {
+    "host": "localhost",
+    "user": "root",
+    "password": "mysql123",
+    "database": "centralized_routing_controller"
+  }
+}

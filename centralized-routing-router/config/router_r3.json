@@ -1,0 +1,9 @@
+{
+  "router_name": "R3",
+  "router_host": "127.0.0.1",
+  "router_port": 5003,
+  "router_token": "token_r3",
+  "controller_host": "127.0.0.1",
+  "controller_port": 6000,
+  "neighbors": []
+}
