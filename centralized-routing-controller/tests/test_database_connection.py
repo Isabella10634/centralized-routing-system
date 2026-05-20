@@ -1,6 +1,8 @@
 import mysql.connector
 
 
+
+
 def test_mysql_connection():
     config = {
         "host": "localhost",
