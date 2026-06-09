@@ -1,35 +1,38 @@
 import socket
-import threading
-import time
 
+from test_support import ControllerDatabaseTestCase
 
 from app.network.tcp_server import TCPServer
-
-HOST = "localhost"
-PORT = 6000
+from app.utils.constants import CONTROLLER_HOST, CONTROLLER_PORT
 
 
-def run_server():
-    server = TCPServer(HOST, PORT)
-    server.start()
+class TestControllerConnection(ControllerDatabaseTestCase):
+    """
+    Sprint 1 controller network configuration tests.
+
+    This file does not start the infinite TCP server loop because that belongs
+    to the guided/manual integration test. Here we verify that the server can
+    be created using configurable host and port values.
+    """
+
+    def test_controller_host_and_port_are_loaded_from_config(self):
+        self.assertIsInstance(CONTROLLER_HOST, str)
+        self.assertNotEqual(CONTROLLER_HOST.strip(), "")
+
+        self.assertIsInstance(CONTROLLER_PORT, int)
+        self.assertGreater(CONTROLLER_PORT, 0)
+
+    def test_tcp_server_can_be_created_with_configurable_address(self):
+        server = TCPServer(host="127.0.0.1", port=0)
+
+        try:
+            self.assertEqual(server.host, "127.0.0.1")
+            self.assertEqual(server.port, 0)
+            self.assertIsInstance(server.server_socket, socket.socket)
+        finally:
+            server.server_socket.close()
 
 
-
-def test_controller_tcp_server():
-
-    # levantar controller en un hilo separado
-    server_thread = threading.Thread(target=run_server, daemon=True)
-    server_thread.start()
-
-    # esperar un momento para que el socket abra
-    time.sleep(2)
-
-    # intentar conectarse al socket
-    client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
-    result = client_socket.connect_ex((HOST, PORT))
-
-    client_socket.close()
-
-    # connect_ex devuelve 0 si la conexión fue exitosa
-    assert result == 0
+if __name__ == "__main__":
+    import unittest
+    unittest.main()

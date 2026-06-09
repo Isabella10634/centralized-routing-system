@@ -1,76 +1,125 @@
-import json
-import socket
-import threading
-import time
-import mysql.connector
+from test_support import ControllerDatabaseTestCase
 
-from app.network.tcp_server import TCPServer
+from app.controllers.router_registry_controller import RouterRegistryController
 
 
-HOST = "127.0.0.1"
-PORT = 7000
+class TestRouterRegistry(ControllerDatabaseTestCase):
+    """
+    Sprint 1 tests for FR-01: router registration.
+
+    These tests validate the same controller logic used when an AUTH message
+    is received from a router.
+    """
+
+    def test_register_router_successfully(self):
+        controller = RouterRegistryController()
+
+        message = {
+            "type": "AUTH",
+            "router_id": "TEST_R1",
+            "ip": "127.0.0.1",
+            "port": 5001,
+            "token": "test_token_r1"
+        }
+
+        response = controller.register_router(message)
+
+        self.assertEqual(response["type"], "AUTH_OK")
+        self.assertEqual(response["router_id"], "TEST_R1")
+
+        router = self.fetch_one(
+            """
+            SELECT nombre, ip, puerto, token, estado
+            FROM routers
+            WHERE nombre = %s
+            """,
+            ("TEST_R1",)
+        )
+
+        self.assertIsNotNone(router)
+        self.assertEqual(router["nombre"], "TEST_R1")
+        self.assertEqual(router["ip"], "127.0.0.1")
+        self.assertEqual(router["puerto"], 5001)
+        self.assertEqual(router["token"], "test_token_r1")
+        self.assertEqual(router["estado"], "activo")
+
+    def test_register_existing_router_updates_information_without_duplicate(self):
+        controller = RouterRegistryController()
+
+        first_message = {
+            "type": "AUTH",
+            "router_id": "TEST_R1",
+            "ip": "127.0.0.1",
+            "port": 5001,
+            "token": "first_token"
+        }
+
+        second_message = {
+            "type": "AUTH",
+            "router_id": "TEST_R1",
+            "ip": "192.168.1.50",
+            "port": 6001,
+            "token": "updated_token"
+        }
+
+        first_response = controller.register_router(first_message)
+        second_response = controller.register_router(second_message)
+
+        self.assertEqual(first_response["type"], "AUTH_OK")
+        self.assertEqual(second_response["type"], "AUTH_OK")
+
+        count_row = self.fetch_one(
+            """
+            SELECT COUNT(*) AS total
+            FROM routers
+            WHERE nombre = %s
+            """,
+            ("TEST_R1",)
+        )
+
+        self.assertEqual(count_row["total"], 1)
+
+        router = self.fetch_one(
+            """
+            SELECT nombre, ip, puerto, token, estado
+            FROM routers
+            WHERE nombre = %s
+            """,
+            ("TEST_R1",)
+        )
+
+        self.assertEqual(router["ip"], "192.168.1.50")
+        self.assertEqual(router["puerto"], 6001)
+        self.assertEqual(router["token"], "updated_token")
+        self.assertEqual(router["estado"], "activo")
+
+    def test_register_router_fails_when_required_field_is_missing(self):
+        controller = RouterRegistryController()
+
+        message = {
+            "type": "AUTH",
+            "router_id": "TEST_R1",
+            "ip": "127.0.0.1",
+            "token": "test_token_r1"
+        }
+
+        response = controller.register_router(message)
+
+        self.assertEqual(response["type"], "AUTH_FAIL")
+        self.assertIn("Missing field", response["message"])
+
+        router = self.fetch_one(
+            """
+            SELECT *
+            FROM routers
+            WHERE nombre = %s
+            """,
+            ("TEST_R1",)
+        )
+
+        self.assertIsNone(router)
 
 
-def run_server():
-    server = TCPServer(HOST, PORT)
-    server.start()
-
-
-def test_router_registry():
-
-    # iniciar controller
-    server_thread = threading.Thread(target=run_server, daemon=True)
-    server_thread.start()
-
-    time.sleep(2)
-
-    # crear cliente TCP simulando router
-    client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
-    client_socket.connect((HOST, PORT))
-
-    # mensaje AUTH
-    auth_message = {
-        "type": "AUTH",
-        "router_id": "TEST_ROUTER",
-        "ip": "127.0.0.1",
-        "port": 9999,
-        "token": "test_token"
-    }
-
-    client_socket.send(json.dumps(auth_message).encode("utf-8"))
-
-    # recibir respuesta
-    response = client_socket.recv(1024)
-
-    parsed_response = json.loads(response.decode("utf-8"))
-
-    assert parsed_response["type"] == "AUTH_OK"
-
-    client_socket.close()
-
-    # esperar inserción DB
-    time.sleep(1)
-
-    # verificar en MySQL
-    connection = mysql.connector.connect(
-        host="localhost",
-        user="root",
-        password="daniel",
-        database="centralized_routing_controller"
-    )
-
-    cursor = connection.cursor(dictionary=True)
-
-    cursor.execute(
-        "SELECT * FROM routers WHERE nombre = %s",
-        ("TEST_ROUTER",)
-    )
-
-    router = cursor.fetchone()
-
-    assert router is not None
-    assert router["nombre"] == "TEST_ROUTER"
-
-    cursor.close()
-    connection.close()
+if __name__ == "__main__":
+    import unittest
+    unittest.main()
