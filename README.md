@@ -8,9 +8,7 @@
 **Team:** NetCore Team  
 
 **Team members:**
-
-- Eider Daniel Fernandez — Developer + Tester
-- Isabella Perez Hoyos — Documenter + Developer
+- Isabella Perez Hoyos — Documenter + Developer + Tester
 
 ---
 
