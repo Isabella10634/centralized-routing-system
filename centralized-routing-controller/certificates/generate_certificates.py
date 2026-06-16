@@ -1,0 +1,70 @@
+from pathlib import Path
+
+
+CERTIFICATE_CONTENT = """-----BEGIN CERTIFICATE-----
+MIIDATCCAemgAwIBAgIUKQfoIopbznj7cWLCuffHmkWWJKcwDQYJKoZIhvcNAQEL
+BQAwFTETMBEGA1UEAwwKTkVUQ09SRS1DQTAeFw0yNjA2MTYwNTU0MzhaFw0zNjA2
+MTMwNTU0MzhaMBUxEzARBgNVBAMMCk5FVENPUkUtQ0EwggEiMA0GCSqGSIb3DQEB
+AQUAA4IBDwAwggEKAoIBAQDYR9+hktGHk+OgE4XbZl4huItkzPo9komlMWSEt2f8
+U5zVX+CJ1m1tzC87RygSNeOMOUz5dhEZvOvVM4M6AlVJGRwvALBoCCuGS8mwge4v
+fBLpBXmFfvBfrZdX1uKvKGYOG7k+bTUsCB+V8qIvM5FbORLX9gDhpQ2p0nAiLWWD
+0x4XLh64H/slDGUx+r7l/dXuR5VeOB/Q6r3KLEskorxE+COsxPnP8cYdRMnJRhn0
+/awGVQRHQZQCXS6No4e2Kdcz2JJhi3IjOP/RjeZN8SG+qZ5SwMhpfcC8ZBsjcPVf
+HFJLFQpUsVObWIIDlG60HYK79BmM7z8s57aEEdik6IT5AgMBAAGjSTBHMCYGA1Ud
+EQQfMB2CCk5FVENPUkUtQ0GCCWxvY2FsaG9zdIcEfwAAATAdBgNVHQ4EFgQUB8/q
+yzRsCMhwBOw85VDu4yjPuc8wDQYJKoZIhvcNAQELBQADggEBAH7pvQjrQuCF1EYT
+2ra3+FOzp8obqBF/YX1+Th059jR9oP8c/2mlYvxVZGwrnCg2Uq3MxIHcDKMwYVBO
+zN9Rp04Jx7M3Ih2SuMF7p7cXbuYysQxHoWBqMPhzVb0BqDGr+2Y+WDSHJF6SG3IX
+6ybL5cT4dzkTb1bT59lMxWsX4oShJ7eA2plsYZYd5rg8Yc2qonmlml0OQaPAjntG
+8uJLNd3vZsNXLYTqVnYfg6qMkX/02o1JyHqNZTtpfSEgVD+u1+wBhUf/+cUsrhoC
+8YuinxRbsb2y7fEAC49EBD1E8LItyXeqRV8CI3AeccYt0YHyS5Ltn7tVt69XniCS
+5ubI5+0=
+-----END CERTIFICATE-----
+"""
+
+PRIVATE_KEY_CONTENT = """-----BEGIN PRIVATE KEY-----
+MIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQDYR9+hktGHk+Og
+E4XbZl4huItkzPo9komlMWSEt2f8U5zVX+CJ1m1tzC87RygSNeOMOUz5dhEZvOvV
+M4M6AlVJGRwvALBoCCuGS8mwge4vfBLpBXmFfvBfrZdX1uKvKGYOG7k+bTUsCB+V
+8qIvM5FbORLX9gDhpQ2p0nAiLWWD0x4XLh64H/slDGUx+r7l/dXuR5VeOB/Q6r3K
+LEskorxE+COsxPnP8cYdRMnJRhn0/awGVQRHQZQCXS6No4e2Kdcz2JJhi3IjOP/R
+jeZN8SG+qZ5SwMhpfcC8ZBsjcPVfHFJLFQpUsVObWIIDlG60HYK79BmM7z8s57aE
+Edik6IT5AgMBAAECggEAZ2r6xq5HLa6sPeuH6rDI2xP8537SO6X51nlHSOTQPsoW
+aLs3SYG0greLcCtmwEpvW6o8od5wb9+z3xcKLS9Xa6Qro1gPgjdB5K4Rq6p9Y8xO
+2IjLImff9cgyYYi5jSrineVozy52Ke9adx91qN9eJoIkfgq+Qidj4Kvk/Zq6e20T
+RQrjLYWVymMuEDRjmTqK2zkMI4zt0fqV6J0EvXXU9MdzKGJBhceD2se3y6DK102V
+tJ5wst1zcyQZlK+0AA3d4t5Oaj+o7HvPatYrEez8F+UK0EBv1yIjf0j9ZLuVLv5B
+uZJ+qLLV/zFtmJzSSMzX2J3RdoK7zMWyehuARXK+TwKBgQDy/XqdicTZpTH4rrlm
+haxT8RZv0M+ll02wRsEAAAfq5/v7uZ/fPLZQkdQPbpAHWpU5whhzAviyIEWhQJ4q
+mqmyWL2LExB+me5pFwOA7HBm07xx3t3CR/YdlP9advhHOdDBE87/4HZVIPSfB9Fv
+EYt+p3mwsL9Qaw1cnzaUZ6cebwKBgQDj3E4JxhEXbVebpC915Pi6pd5vd0C9YlqL
+dZCbcheouqUQxXB7KZnfbB2AEaIyiy1hIVEEKbrPfViJGX72tZuuvZr0aj4Qvmvk
+Gv4nPuf5uhxZQPytp5j91wiyhu0hwB3w3p7VUP0m9LP6fm101zDVtl1JOPRIgd5H
+SUrBdcxHFwKBgH1lvIpiV7kuHEzG9pzm7RjguQB5VT+ShqAq010JpwxeLdcpY0zU
+Sw3nQ/W2zBNPduU4ul9YMDnUl7pw228HI/4K974213NOQw/utXsqCZO3P2/QYMbr
+ViLMCr+H1/cB6i5J57B7CPZDrJoJcdaMyl1RVmaNwB1jMaET9Rm/KCp3AoGAEkxr
+2+8TCk2WnoIl6ZLUwrB1V4A9K7hNSyvKzCDyc3NhtCIW8V0a5U1aZSGFZAe3QjiZ
+t/rd7LHFPWVVw9w7v2GsovoxN8kDAxOD24T6vhxLEIPehteRurjdEvEw8+fov6Ix
+ITJa0hkOpwwmIB7z5gW6Iho3y+baAeGJ5lVebUsCgYBXRcoTGjzIQx2tiMmqdwmR
+a6qJNBvI5r8QcoE9GMeGP8C3W23nsFJhHEpAO6+v+ebNJkfJx8xkSdcWwWU/i5Tb
+dvFkQvYQJabWvSwpQJJJwO/0DEzrhdq4/c4qem6TrqxZgtSIahlJUeiQbZgVyYqt
+9YPPb+nffk875vG3DsaaGA==
+-----END PRIVATE KEY-----
+"""
+
+
+def main():
+    certificates_dir = Path(__file__).resolve().parent
+
+    certificate_path = certificates_dir / "server.crt"
+    private_key_path = certificates_dir / "server.key"
+
+    certificate_path.write_text(CERTIFICATE_CONTENT, encoding="utf-8")
+    private_key_path.write_text(PRIVATE_KEY_CONTENT, encoding="utf-8")
+
+    print(f"Certificate created: {certificate_path}")
+    print(f"Private key created: {private_key_path}")
+
+
+if __name__ == "__main__":
+    main()

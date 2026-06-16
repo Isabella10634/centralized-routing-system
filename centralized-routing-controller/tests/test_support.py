@@ -16,12 +16,14 @@ from app.utils.db_config import DB_CONFIG
 
 class ControllerDatabaseTestCase(unittest.TestCase):
     """
-    Base class for Sprint 1 controller tests.
+    Base class for controller tests.
 
-    This class centralizes database connection, test data cleanup,
-    and reusable SELECT helpers.
+    This class centralizes:
+    - MySQL connection using the official controller configuration.
+    - Cleanup of TEST_ data before and after each test.
+    - Reusable helpers to query the database.
 
-    Test data always uses the TEST_ prefix so the tests can be repeated
+    Test data always uses the TEST_ prefix so tests can be repeated
     without damaging real project data.
     """
 
@@ -36,9 +38,6 @@ class ControllerDatabaseTestCase(unittest.TestCase):
     def get_connection(self):
         """
         Create a MySQL connection using the official controller configuration.
-
-        Do not write host, user, password, or database manually inside tests.
-        The values must come from config/controller_config.json.
         """
         return mysql.connector.connect(**DB_CONFIG)
 
@@ -69,45 +68,110 @@ class ControllerDatabaseTestCase(unittest.TestCase):
         """
         Delete only automated test data.
 
-        Links must be deleted before routers because enlaces depends on routers.
-        Events are cleaned only when their description includes TEST_.
-        """
-        required_tables = ["routers", "enlaces", "eventos"]
+        Important order:
+        1. metricas_globales
+        2. metricas_router
+        3. rutas_calculadas
+        4. enlaces
+        5. eventos
+        6. routers
 
-        for table_name in required_tables:
-            if not self.table_exists(table_name):
-                return
+        This avoids foreign key problems when deleting test routers.
+        """
+        if not self.table_exists("routers"):
+            return
 
         connection = self.get_connection()
         cursor = connection.cursor()
 
-        cursor.execute(
-            """
-            DELETE e
-            FROM enlaces e
-            INNER JOIN routers ro ON e.router_origen_id = ro.id
-            WHERE ro.nombre LIKE %s
-            """,
-            (f"{self.TEST_PREFIX}%",)
-        )
+        if self.table_exists("metricas_globales"):
+            cursor.execute(
+                """
+                DELETE mg
+                FROM metricas_globales mg
+                INNER JOIN routers r ON mg.router_id = r.id
+                WHERE r.nombre LIKE %s
+                """,
+                (f"{self.TEST_PREFIX}%",)
+            )
 
-        cursor.execute(
-            """
-            DELETE e
-            FROM enlaces e
-            INNER JOIN routers rd ON e.router_destino_id = rd.id
-            WHERE rd.nombre LIKE %s
-            """,
-            (f"{self.TEST_PREFIX}%",)
-        )
+            cursor.execute(
+                """
+                DELETE FROM metricas_globales
+                WHERE router_nombre LIKE %s
+                """,
+                (f"{self.TEST_PREFIX}%",)
+            )
 
-        cursor.execute(
-            """
-            DELETE FROM eventos
-            WHERE descripcion LIKE %s
-            """,
-            (f"%{self.TEST_PREFIX}%",)
-        )
+        if self.table_exists("metricas_router"):
+            cursor.execute(
+                """
+                DELETE mr
+                FROM metricas_router mr
+                INNER JOIN routers r ON mr.router_id = r.id
+                WHERE r.nombre LIKE %s
+                """,
+                (f"{self.TEST_PREFIX}%",)
+            )
+
+            cursor.execute(
+                """
+                DELETE FROM metricas_router
+                WHERE router_nombre LIKE %s
+                """,
+                (f"{self.TEST_PREFIX}%",)
+            )
+
+        if self.table_exists("rutas_calculadas"):
+            cursor.execute(
+                """
+                DELETE rc
+                FROM rutas_calculadas rc
+                INNER JOIN routers ro ON rc.router_origen_id = ro.id
+                WHERE ro.nombre LIKE %s
+                """,
+                (f"{self.TEST_PREFIX}%",)
+            )
+
+            cursor.execute(
+                """
+                DELETE rc
+                FROM rutas_calculadas rc
+                INNER JOIN routers rd ON rc.router_destino_id = rd.id
+                WHERE rd.nombre LIKE %s
+                """,
+                (f"{self.TEST_PREFIX}%",)
+            )
+
+        if self.table_exists("enlaces"):
+            cursor.execute(
+                """
+                DELETE e
+                FROM enlaces e
+                INNER JOIN routers ro ON e.router_origen_id = ro.id
+                WHERE ro.nombre LIKE %s
+                """,
+                (f"{self.TEST_PREFIX}%",)
+            )
+
+            cursor.execute(
+                """
+                DELETE e
+                FROM enlaces e
+                INNER JOIN routers rd ON e.router_destino_id = rd.id
+                WHERE rd.nombre LIKE %s
+                """,
+                (f"{self.TEST_PREFIX}%",)
+            )
+
+        if self.table_exists("eventos"):
+            cursor.execute(
+                """
+                DELETE FROM eventos
+                WHERE descripcion LIKE %s
+                """,
+                (f"%{self.TEST_PREFIX}%",)
+            )
 
         cursor.execute(
             """

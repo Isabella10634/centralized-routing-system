@@ -1,3 +1,4 @@
+from app.controllers.metrics_controller import MetricsController
 from app.controllers.router_registry_controller import RouterRegistryController
 from app.controllers.routing_controller import RoutingController
 from app.controllers.topology_controller import TopologyController
@@ -13,8 +14,11 @@ class ClientHandler:
     - NEIGHBORS
 
     Sprint 2:
-    - After NEIGHBORS, the controller calculates routing tables and sends
-      UPDATE_TABLE to the router that sent the topology information.
+    - Calculate routing tables and send UPDATE_TABLE.
+
+    Sprint 3:
+    - Receive HEARTBEAT messages from routers.
+    - Receive METRICS messages from routers.
     """
 
     def __init__(self, client_socket, client_address):
@@ -23,6 +27,7 @@ class ClientHandler:
         self.router_registry_controller = RouterRegistryController()
         self.topology_controller = TopologyController()
         self.routing_controller = RoutingController()
+        self.metrics_controller = MetricsController()
         self.input_buffer = ""
 
     def handle(self):
@@ -77,6 +82,12 @@ class ClientHandler:
             elif message_type == "NEIGHBORS":
                 self._handle_neighbors(parsed_message)
 
+            elif message_type == "HEARTBEAT":
+                self._handle_heartbeat(parsed_message)
+
+            elif message_type == "METRICS":
+                self._handle_metrics(parsed_message)
+
             else:
                 self._send_error("Unsupported message type")
 
@@ -100,6 +111,22 @@ class ClientHandler:
 
         if response_data.get("type") == "NEIGHBORS_OK":
             self._send_update_table(parsed_message)
+
+    def _handle_heartbeat(self, parsed_message):
+        """
+        Handle HEARTBEAT message from a router.
+        """
+        response_data = self.router_registry_controller.register_heartbeat(
+            parsed_message
+        )
+        self._send_message(response_data)
+
+    def _handle_metrics(self, parsed_message):
+        """
+        Handle METRICS message from a router.
+        """
+        response_data = self.metrics_controller.register_metrics(parsed_message)
+        self._send_message(response_data)
 
     def _send_update_table(self, parsed_message):
         """

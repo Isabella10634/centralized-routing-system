@@ -1,14 +1,29 @@
 import mysql.connector
+
 from app.utils.db_config import DB_CONFIG
 
 
 class RouterDAO:
-    # DAO encargado de todas las operaciones sobre la tabla routers.
+    """
+    DAO responsible for all database operations related to routers.
+
+    Sprint 1:
+    - Insert routers.
+    - Update router information.
+    - Query registered routers.
+
+    Sprint 3:
+    - Update router heartbeat timestamp.
+    - Mark routers as inactive when heartbeat timeout is exceeded.
+    """
+
     def __init__(self):
         self.config = DB_CONFIG
 
     def connect(self):
-        # Abre una conexión a MySQL usando la configuración local.
+        """
+        Open a MySQL connection using the local database configuration.
+        """
         return mysql.connector.connect(**self.config)
 
     def insert_router(self, nombre, ip, puerto, token, estado):
@@ -16,8 +31,8 @@ class RouterDAO:
         cursor = connection.cursor()
 
         query = """
-        INSERT INTO routers (nombre, ip, puerto, token, estado)
-        VALUES (%s, %s, %s, %s, %s)
+        INSERT INTO routers (nombre, ip, puerto, token, estado, ultima_actividad)
+        VALUES (%s, %s, %s, %s, %s, NOW())
         """
         values = (nombre, ip, puerto, token, estado)
 
@@ -54,7 +69,6 @@ class RouterDAO:
         return router
 
     def router_exists(self, nombre):
-        # Se usa para no duplicar routers al volver a registrar uno ya existente.
         connection = self.connect()
         cursor = connection.cursor()
 
@@ -79,13 +93,19 @@ class RouterDAO:
         connection.close()
 
     def update_router_info(self, nombre, ip, puerto, token, estado):
-        # Si el router ya existe, se actualizan sus datos en vez de insertarlo otra vez.
+        """
+        Update router information when the router already exists.
+        """
         connection = self.connect()
         cursor = connection.cursor()
 
         query = """
         UPDATE routers
-        SET ip = %s, puerto = %s, token = %s, estado = %s
+        SET ip = %s,
+            puerto = %s,
+            token = %s,
+            estado = %s,
+            ultima_actividad = NOW()
         WHERE nombre = %s
         """
         cursor.execute(query, (ip, puerto, token, estado, nombre))
@@ -93,3 +113,65 @@ class RouterDAO:
 
         cursor.close()
         connection.close()
+
+    def update_router_heartbeat(self, nombre):
+        """
+        Update the last activity timestamp of a router and mark it as active.
+
+        Important:
+        MySQL cursor.rowcount can be 0 if the row already had the same values
+        within the same second. Therefore, router existence must be verified
+        directly instead of relying only on rowcount.
+        """
+        connection = self.connect()
+        cursor = connection.cursor()
+
+        exists_query = """
+        SELECT COUNT(*)
+        FROM routers
+        WHERE nombre = %s
+        """
+        cursor.execute(exists_query, (nombre,))
+        exists = cursor.fetchone()[0] > 0
+
+        if not exists:
+            cursor.close()
+            connection.close()
+            return False
+
+        update_query = """
+        UPDATE routers
+        SET estado = %s,
+            ultima_actividad = NOW()
+        WHERE nombre = %s
+        """
+        cursor.execute(update_query, ("activo", nombre))
+        connection.commit()
+
+        cursor.close()
+        connection.close()
+
+        return True
+
+    def mark_inactive_routers(self, timeout_seconds):
+        """
+        Mark routers as inactive when their last activity is older than timeout_seconds.
+        """
+        connection = self.connect()
+        cursor = connection.cursor()
+
+        query = """
+        UPDATE routers
+        SET estado = %s
+        WHERE ultima_actividad IS NOT NULL
+          AND TIMESTAMPDIFF(SECOND, ultima_actividad, NOW()) > %s
+        """
+        cursor.execute(query, ("inactivo", timeout_seconds))
+        connection.commit()
+
+        affected_rows = cursor.rowcount
+
+        cursor.close()
+        connection.close()
+
+        return affected_rows
