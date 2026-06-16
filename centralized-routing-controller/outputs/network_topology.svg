@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="650" viewBox="0 0 900 650">
+
+        <defs>
+            <marker id="arrow" markerWidth="10" markerHeight="10"
+                    refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+                <path d="M0,0 L0,6 L9,3 z" fill="#333333" />
+            </marker>
+        </defs>
+        
+<rect x="0" y="0" width="900" height="650" fill="#ffffff" />
+<text x="450" y="40" text-anchor="middle" font-family="Arial" font-size="24" font-weight="bold">NETCORE - Active Network Topology</text>
+<text x="450" y="68" text-anchor="middle" font-family="Arial" font-size="14" fill="#555555">Directed weighted graph used by Dijkstra</text>
+<line x1="480.74" y1="117.34" x2="638.00" y2="231.59" stroke="#333333" stroke-width="2.2" marker-end="url(#arrow)" />
+<rect x="541.37" y="160.46" width="36" height="22" rx="6" ry="6" fill="#ffffff" stroke="#999999" />
+<text x="559.37" y="179.46" text-anchor="middle" font-family="Arial" font-size="13" font-weight="bold" fill="#111111">10</text>
+<line x1="461.74" y1="131.14" x2="573.45" y2="474.93" stroke="#333333" stroke-width="2.2" marker-end="url(#arrow)" />
+<rect x="499.60" y="289.04" width="36" height="22" rx="6" ry="6" fill="#ffffff" stroke="#999999" />
+<text x="517.60" y="308.04" text-anchor="middle" font-family="Arial" font-size="13" font-weight="bold" fill="#111111">5</text>
+<line x1="657.00" y1="290.07" x2="596.93" y2="474.93" stroke="#333333" stroke-width="2.2" marker-end="url(#arrow)" />
+<rect x="608.97" y="368.50" width="36" height="22" rx="6" ry="6" fill="#ffffff" stroke="#999999" />
+<text x="626.97" y="387.50" text-anchor="middle" font-family="Arial" font-size="13" font-weight="bold" fill="#111111">1</text>
+<line x1="638.00" y1="276.26" x2="345.55" y2="488.74" stroke="#333333" stroke-width="2.2" marker-end="url(#arrow)" />
+<rect x="473.78" y="368.50" width="36" height="22" rx="6" ry="6" fill="#ffffff" stroke="#999999" />
+<text x="491.78" y="387.50" text-anchor="middle" font-family="Arial" font-size="13" font-weight="bold" fill="#111111">4</text>
+<line x1="547.19" y1="511.07" x2="352.81" y2="511.07" stroke="#333333" stroke-width="2.2" marker-end="url(#arrow)" />
+<rect x="432.00" y="497.07" width="36" height="22" rx="6" ry="6" fill="#ffffff" stroke="#999999" />
+<text x="450.00" y="516.07" text-anchor="middle" font-family="Arial" font-size="13" font-weight="bold" fill="#111111">2</text>
+<line x1="554.45" y1="488.74" x2="262.00" y2="276.26" stroke="#333333" stroke-width="2.2" marker-end="url(#arrow)" />
+<rect x="390.22" y="368.50" width="36" height="22" rx="6" ry="6" fill="#ffffff" stroke="#999999" />
+<text x="408.22" y="387.50" text-anchor="middle" font-family="Arial" font-size="13" font-weight="bold" fill="#111111">8</text>
+<line x1="326.55" y1="474.93" x2="438.26" y2="131.14" stroke="#333333" stroke-width="2.2" marker-end="url(#arrow)" />
+<rect x="364.40" y="289.04" width="36" height="22" rx="6" ry="6" fill="#ffffff" stroke="#999999" />
+<text x="382.40" y="308.04" text-anchor="middle" font-family="Arial" font-size="13" font-weight="bold" fill="#111111">7</text>
+<line x1="303.07" y1="474.93" x2="243.00" y2="290.07" stroke="#333333" stroke-width="2.2" marker-end="url(#arrow)" />
+<rect x="255.03" y="368.50" width="36" height="22" rx="6" ry="6" fill="#ffffff" stroke="#999999" />
+<text x="273.03" y="387.50" text-anchor="middle" font-family="Arial" font-size="13" font-weight="bold" fill="#111111">3</text>
+<line x1="262.00" y1="231.59" x2="419.26" y2="117.34" stroke="#333333" stroke-width="2.2" marker-end="url(#arrow)" />
+<rect x="322.63" y="160.46" width="36" height="22" rx="6" ry="6" fill="#ffffff" stroke="#999999" />
+<text x="340.63" y="179.46" text-anchor="middle" font-family="Arial" font-size="13" font-weight="bold" fill="#111111">6</text>
+<line x1="269.26" y1="253.93" x2="630.74" y2="253.93" stroke="#333333" stroke-width="2.2" marker-end="url(#arrow)" />
+<rect x="432.00" y="239.93" width="36" height="22" rx="6" ry="6" fill="#ffffff" stroke="#999999" />
+<text x="450.00" y="258.93" text-anchor="middle" font-family="Arial" font-size="13" font-weight="bold" fill="#111111">2</text>
+<circle cx="450.00" cy="95.00" r="34" fill="#e8f1ff" stroke="#1f4e79" stroke-width="3" />
+<text x="450.00" y="101.00" text-anchor="middle" font-family="Arial" font-size="18" font-weight="bold" fill="#1f4e79">R1</text>
+<circle cx="668.74" cy="253.93" r="34" fill="#e8f1ff" stroke="#1f4e79" stroke-width="3" />
+<text x="668.74" y="259.93" text-anchor="middle" font-family="Arial" font-size="18" font-weight="bold" fill="#1f4e79">R2</text>
+<circle cx="585.19" cy="511.07" r="34" fill="#e8f1ff" stroke="#1f4e79" stroke-width="3" />
+<text x="585.19" y="517.07" text-anchor="middle" font-family="Arial" font-size="18" font-weight="bold" fill="#1f4e79">R3</text>
+<circle cx="314.81" cy="511.07" r="34" fill="#e8f1ff" stroke="#1f4e79" stroke-width="3" />
+<text x="314.81" y="517.07" text-anchor="middle" font-family="Arial" font-size="18" font-weight="bold" fill="#1f4e79">R4</text>
+<circle cx="231.26" cy="253.93" r="34" fill="#e8f1ff" stroke="#1f4e79" stroke-width="3" />
+<text x="231.26" y="259.93" text-anchor="middle" font-family="Arial" font-size="18" font-weight="bold" fill="#1f4e79">R5</text>
+</svg>
